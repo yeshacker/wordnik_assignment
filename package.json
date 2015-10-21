@@ -1,0 +1,17 @@
+{
+  "name": "wordnik_dict",
+  "version": "0.1.0",
+  "description": "FlowApp Assignment",
+  "main": "dict.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Shailendra",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.9.0"
+  },
+  "eslintConfig": {
+    "extends": "airbnb/legacy"
+  }
+}
