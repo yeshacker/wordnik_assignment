@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
+var getRelatedWords = require('./helpers/get_related_words.js');
+
 /*
 Display synonyms of a word
  */
@@ -11,4 +13,6 @@ if (process.argv[2]) {
   word = process.argv[2];
 }
 
-console.log('Displaying synonyms of the word': word);
+console.log('Displaying synonyms of the word: ', word);
+
+getRelatedWords(word, false, 'synonym', 3);

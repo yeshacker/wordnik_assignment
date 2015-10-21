@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
+var getExamples = require('./helpers/get_examples.js');
+
 /*
 Display examples of a word
  */
@@ -11,4 +13,6 @@ if (process.argv[2]) {
   word = process.argv[2];
 }
 
-console.log('Displaying examples of the word': word);
+console.log('Displaying examples of the word: ', word);
+
+getExamples(word, false, false);

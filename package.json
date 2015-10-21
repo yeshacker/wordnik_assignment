@@ -7,9 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Shailendra",
+  "repository": "git@github.com:yeshacker/wordnik_assignment.git",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.9.0"
+    "commander": "^2.9.0",
+    "config": "^1.16.0",
+    "request": "^2.65.0"
   },
   "eslintConfig": {
     "extends": "airbnb/legacy"
