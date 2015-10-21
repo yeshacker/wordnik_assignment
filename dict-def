@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display definitions of a word
+ */
+
+var word;
+
+if (process.argv[2]) {
+  word = process.argv[2];
+}
+
+console.log('Displaying definitions of the word': word);

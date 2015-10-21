@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+  Starting a word game
+ */
+
+console.log('Starting a word game');

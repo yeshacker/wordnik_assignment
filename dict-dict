@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display all the details of a word or the word of the day
+ */
+
+var word;
+
+if (process.argv.length == 2) {
+  console.log('Displaying all the details of the Word of the Day.');
+} else {
+  word = process.argv[2];
+  console.log('Displaying all the details of the word: ' + word);
+}
