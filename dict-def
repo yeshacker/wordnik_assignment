@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display definition(s) of a word
+ */
+
+var callback = require('./helpers/callbacks.js').fnDisplayDefinitions;
+var getDefinitions = require('./helpers/get_definitions.js');
+
+var word = process.argv[2];
+
+// Display an error message if the required argument is missing
+if (!word) {
+  console.error('Required <word> argument missing!');
+} else {
+  console.info('Word:', word);
+  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, callback);
+}

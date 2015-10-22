@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display synonym(s) of a word
+ */
+
+var callback = require('./helpers/callbacks.js').fnDisplayRelatedWords;
+var getRelatedWords = require('./helpers/get_related_words.js');
+
+var word = process.argv[2];
+
+// Display an error message if the required argument is missing
+if (!word) {
+  console.error('Required <word> argument missing!');
+} else {
+  console.info('Word:', word);
+  getRelatedWords(word, false, 'synonym', 3, callback);
+}

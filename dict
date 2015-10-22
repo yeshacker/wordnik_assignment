@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+'use strict';
+
+var commander = require('commander');
+
+commander
+  .version('0.1.0')
+  .command('def <word>', 'display definitions of a word')
+  .command('syn <word>', 'display synonyms of a word')
+  .command('ant <word>', 'display antonyms of a word')
+  .command('ex <word>', 'display examples of a word')
+  .command('dict <word>', 'display all the details related with the word', {isDefault: true})
+  .command('play <word>', 'play a word game')
+  .parse(process.argv);

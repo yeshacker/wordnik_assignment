@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display example(s) of a word
+ */
+
+var callback = require('./helpers/callbacks.js').fnDisplayExamples;
+var getExamples = require('./helpers/get_examples.js');
+
+var word = process.argv[2];
+
+// Display an error message if the required argument is missing
+if (!word) {
+  console.error('Required <word> argument missing!');
+} else {
+  console.info('Word:', word);
+  getExamples(word, false, false, 0, 2, callback);
+}
