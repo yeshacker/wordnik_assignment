@@ -9,9 +9,10 @@ var request = require('request');
  * @param  {[type]} useCanonical             [If true will try to return the correct word root ('cats' -> 'cat'). If false returns exactly what was requested.]
  * @param  {[type]} relationshipTypes        [Limits the total results per type of relationship type]
  * @param  {[type]} limitPerRelationshipType [Restrict to the supplied relationship types]
- * @return {[type]}                          [Returns related words]
+ * @param  {function} fnDisplayResults    [Callback to process the results]
  */
-var getDefinitions = function(word, useCanonical, relationshipTypes, limitPerRelationshipType) {
+
+var getRelatedWords = function(word, useCanonical, relationshipTypes, limitPerRelationshipType, fnDisplayResults) {
   var _params, _paramsKeys, apiKey, queryString = '';
 
   _params = {
@@ -30,9 +31,7 @@ var getDefinitions = function(word, useCanonical, relationshipTypes, limitPerRel
   request({
     method: 'GET',
     uri: 'http://api.wordnik.com/v4/word.json/'+ word +'/relatedWords' + queryString,
-  }, function(error, response, body) {
-    console.log(body);
-  });
+  }, fnDisplayResults);
 }
 
-module.exports = getDefinitions;
+module.exports = getRelatedWords;
