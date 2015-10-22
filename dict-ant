@@ -5,25 +5,15 @@
 Display antonym(s) of a word
  */
 
+var callback = require('./helpers/callbacks.js').fnDisplayRelatedWords;
 var getRelatedWords = require('./helpers/get_related_words.js');
+
 var word = process.argv[2];
 
-// Callback to process and display results
-var fnDisplayResults = function(error, response, body) {
-  var dataObjArr = JSON.parse(body);
-  console.info('Word:', word);
-  console.info('Antonym(s)');
-
-  dataObjArr.forEach(function(dataObj) {
-    var antonyms = dataObj.words;
-    antonyms.forEach(function(antonym, index) {
-      console.info(++index + '.', antonym);
-    });
-  });
-};
-
 // Display an error message if the required argument is missing
-if (!word)
+if (!word) {
   console.error('Required <word> argument missing!');
-else
-  getRelatedWords(word, false, 'antonym', 3, fnDisplayResults);
+} else {
+  console.info('Word:', word);
+  getRelatedWords(word, false, 'antonym', 3, callback);
+}

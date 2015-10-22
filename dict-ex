@@ -5,24 +5,15 @@
 Display example(s) of a word
  */
 
+var callback = require('./helpers/callbacks.js').fnDisplayExamples;
 var getExamples = require('./helpers/get_examples.js');
+
 var word = process.argv[2];
 
-// Callback to process and display results
-var fnDisplayResults = function(error, response, body) {
-  var dataObjArr = JSON.parse(body);
-  console.info('Word:', word);
-  console.info('Example(s)');
-
-  var examples = dataObjArr.examples;
-  examples.forEach(function(example, index) {
-    console.info(++index + '.', example.text)
-    console.info('Ref:', example.title);
-  });
-};
-
 // Display an error message if the required argument is missing
-if (!word)
+if (!word) {
   console.error('Required <word> argument missing!');
-else
-  getExamples(word, false, false, 0, 2, fnDisplayResults);
+} else {
+  console.info('Word:', word);
+  getExamples(word, false, false, 0, 2, callback);
+}

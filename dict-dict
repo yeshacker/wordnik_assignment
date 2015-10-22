@@ -1,15 +1,42 @@
 #!/usr/bin/env node
 'use strict';
 
+var async = require('async');
+
+var callbacks = require('./helpers/callbacks.js');
+
+var getDefinitions = require('./helpers/get_definitions.js');
+var getExamples = require('./helpers/get_examples.js');
+var getRelatedWords = require('./helpers/get_related_words.js');
+var getWordOfTheDay = require('./helpers/get_word_of_the_day.js');
+
+var word = process.argv[2];
+
+var formatDate = function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+};
+
 /*
-Display all the details of a word or the word of the day
+Display all the above details of a word or the word of the day
  */
 
-var word;
-
-if (process.argv.length == 2) {
-  console.log('Displaying all the details of the Word of the Day.');
+if (!word) {
+  var date = formatDate(new Date());
+  console.info('Displaying all the above details of the Word of the Day.');
+  getWordOfTheDay(date, callbacks.fnDisplayWordOfTheDay);
 } else {
-  word = process.argv[2];
-  console.log('Displaying all the details of the word:', word);
+  console.info('Displaying all the above details of the word:', word);
+
+  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, callbacks.fnDisplayDefinitions);
+  getRelatedWords(word, false, 'synonym', 3, callbacks.fnDisplayRelatedWords);
+  getRelatedWords(word, false, 'antonym', 3, callbacks.fnDisplayRelatedWords);
+  getExamples(word, false, false, 0, 2, callbacks.fnDisplayExamples);
 }
