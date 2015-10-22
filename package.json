@@ -14,7 +14,8 @@
     "config": "^1.16.0",
     "request": "^2.65.0"
   },
-  "eslintConfig": {
-    "extends": "airbnb/legacy"
+  "devDependencies": {
+    "eslint": "^1.7.3",
+    "eslint-config-airbnb": "^0.1.0"
   }
 }
