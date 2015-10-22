@@ -25,6 +25,7 @@ module.exports = {
         function($1){
             return $1.toUpperCase();
         });
+
       console.info(relationshipType + '(s)');
       var words = dataObj.words;
       words.forEach(function(word, index) {
