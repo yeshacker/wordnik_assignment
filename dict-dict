@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+'use strict';
+
+var async = require('async');
+
+var getDefinitions = require('./api_helpers/get_definitions.js');
+var getExamples = require('./api_helpers/get_examples.js');
+var getRelatedWords = require('./api_helpers/get_related_words.js');
+var getWordOfTheDay = require('./api_helpers/get_word_of_the_day.js');
+
+var word = process.argv[2];
+
+var formatDate = function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+};
+
+/*
+Display all the above details of a word or the word of the day
+ */
+
+var displayDictDetails = function displayDictDetails(word) {
+  async.series({
+    definitions: function(next) {
+      getDefinitions(word, 1, 'noun', false, 'wordnet', false, false, next);
+    },
+    synonyms: function(next) {
+      getRelatedWords(word, false, 'synonym', 1, next);
+    },
+    antonyms: function(next) {
+      getRelatedWords(word, false, 'antonym', 1, next);
+    },
+    examples: function(next) {
+      getExamples(word, false, false, 0, 2, next);
+    }
+  },
+  function (err, results) {
+    console.info('Definition:', results.definitions[0]);
+    console.info('Synonym:', results.synonyms[0]);
+    console.info('Antonym:', results.antonyms[0]);
+    console.info('Example:', results.examples);
+  });
+}
+
+if (!word) {
+  var date = formatDate(new Date());
+  console.info('Displaying all the above details of the Word of the Day.');
+
+  async.waterfall([
+    function(next) {
+      getWordOfTheDay(date, next);
+    },
+    function(word, next) {
+      displayDictDetails(word);
+    }
+  ]);
+
+} else {
+  console.info('Displaying all the above details of the word:', word);
+  displayDictDetails(word);
+}

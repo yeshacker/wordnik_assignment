@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display example(s) of a word
+ */
+
+var getExamples = require('./api_helpers/get_examples.js');
+
+var word = process.argv[2];
+
+// Display an error message if the required argument is missing
+if (!word) {
+  console.error('Required <word> argument missing!');
+} else {
+  getExamples(word, false, false, 0, 2, null);
+}

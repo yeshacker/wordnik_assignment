@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+'use strict';
+
+/*
+Display definition(s) of a word
+ */
+
+var getDefinitions = require('./api_helpers/get_definitions.js');
+
+var word = process.argv[2];
+
+// Display an error message if the required argument is missing
+if (!word) {
+  console.error('Required <word> argument missing!');
+} else {
+  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, null);
+}
