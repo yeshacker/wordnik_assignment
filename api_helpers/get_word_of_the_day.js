@@ -6,10 +6,10 @@ var request = require('request');
 /**
  * Get Word of the day
  * @param  {date}     date             [Fetches by date in yyyy-MM-dd]
- * @param  {function} fnDisplayResults [callback to display word of the day]
+ * @param  {function} next             [callback]
  */
 
-var getWordOfTheDay = function(date, fnDisplayResults) {
+var getWordOfTheDay = function(date, next) {
   var _params, _paramsKeys, apiKey, queryString = '';
 
   _params = {
@@ -26,7 +26,17 @@ var getWordOfTheDay = function(date, fnDisplayResults) {
   request({
     method: 'GET',
     uri: 'http://api.wordnik.com/v4/words.json/wordOfTheDay' + queryString,
-  }, fnDisplayResults);
+  }, function(error, response, body) {
+    var dataObj = JSON.parse(body);
+
+    if (typeof next === 'function') {
+      next(null, dataObj.word);
+    }
+    
+    console.info('Word Of The Day');
+    console.info('++', dataObj.word);
+
+  });
 }
 
 module.exports = getWordOfTheDay;

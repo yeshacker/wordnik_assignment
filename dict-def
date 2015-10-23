@@ -5,8 +5,7 @@
 Display definition(s) of a word
  */
 
-var callback = require('./helpers/callbacks.js').fnDisplayDefinitions;
-var getDefinitions = require('./helpers/get_definitions.js');
+var getDefinitions = require('./api_helpers/get_definitions.js');
 
 var word = process.argv[2];
 
@@ -14,6 +13,5 @@ var word = process.argv[2];
 if (!word) {
   console.error('Required <word> argument missing!');
 } else {
-  console.info('Word:', word);
-  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, callback);
+  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, null);
 }

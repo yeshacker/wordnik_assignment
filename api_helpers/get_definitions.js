@@ -12,10 +12,10 @@ var request = require('request');
  * @param  {string} sourceDictionaries [Source dictionary to return definitions from. If 'all' is received, results are returned from all sources. If multiple values are received (e.g. 'century,wiktionary'), results are returned from the first specified dictionary that has definitions. If left blank, results are returned from the first dictionary that has definitions. By default, dictionaries are searched in this order: ahd, wiktionary, webster, century, wordnet]
  * @param  {string} useCanonical       [If true will try to return the correct word root ('cats' -> 'cat'). If false returns exactly what was requested.]
  * @param  {string} includeTags        [Return a closed set of XML tags in response]
- * @param  {function} fnDisplayResults    [Callback to process the results]
+ * @param  {callback} next             [callback]
  */
 
-var getDefinitions = function(word, limit, partOfSpeech, includeRelated, sourceDictionaries, useCanonical, includeTags, fnDisplayResults) {
+var getDefinitions = function(word, limit, partOfSpeech, includeRelated, sourceDictionaries, useCanonical, includeTags, next) {
   var _params, _paramsKeys, apiKey, queryString = '';
 
   _params = {
@@ -34,10 +34,29 @@ var getDefinitions = function(word, limit, partOfSpeech, includeRelated, sourceD
     queryString += ((index == 0) ? '?api_key=' + apiKey + '&' : '&') + _paramsKey + '=' + _params[_paramsKey];
   });
 
+  // console.log(callback);
+
   request({
     method: 'GET',
     uri: 'http://api.wordnik.com/v4/word.json/'+ word +'/definitions' + queryString,
-  }, fnDisplayResults);
+  }, function(error, response, body) {
+    var dataObjArr = JSON.parse(body), dataArr = [];
+
+    if (dataObjArr.length > 0) {
+      if (!next)
+        console.info('Definition(s)');
+
+      dataObjArr.forEach(function(dataObj, index) {
+        dataArr.push(dataObj.text);
+
+        if (!next)
+          console.info('++', ++index + '.', dataObj.text);
+      });
+    }
+
+    if (typeof next === 'function')
+      next(null, dataArr);
+  });
 }
 
 module.exports = getDefinitions;

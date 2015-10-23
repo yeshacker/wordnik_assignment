@@ -10,10 +10,10 @@ var request = require('request');
  * @param  {String}   useCanonical          [If true will try to return the correct word root ('cats' -> 'cat'). If false returns exactly what was requested.]
  * @param  {int}      skip                  [Results to skip]
  * @param  {int}      limit                 [Maximum number of results to return]
- * @param  {function} fnDisplayResults    [Callback to process the results]
+ * @param  {function} callback              [Callback]
  */
 
-var getExamples = function(word, includeDuplicates, useCanonical, skip, limit, fnDisplayResults) {
+var getExamples = function(word, includeDuplicates, useCanonical, skip, limit, next) {
   var _params, _paramsKeys, api_key, queryString = '';
 
   _params = {
@@ -33,7 +33,22 @@ var getExamples = function(word, includeDuplicates, useCanonical, skip, limit, f
   request({
     method: 'GET',
     uri: 'http://api.wordnik.com/v4/word.json/'+ word +'/examples' + queryString,
-  }, fnDisplayResults);
+  }, function(error, response, body) {
+    var dataObjArr = JSON.parse(body);
+    var examples = dataObjArr.examples;
+
+    if (typeof next === 'function') {
+      next(null, dataObjArr.examples[0].text); return;
+    }
+    
+    if (examples.length > 0) {
+      console.info('Example(s)');
+      examples.forEach( function(example, index) {
+        console.info('++', ++index + '.', example.text)
+        console.info('++', 'Ref:', example.title);
+      });
+    }
+  });
 }
 
 module.exports = getExamples;

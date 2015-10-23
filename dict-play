@@ -1,8 +1,137 @@
 #!/usr/bin/env node
 'use strict';
 
+var async = require('async');
+
+var getRandomWord = require('./api_helpers/get_random_word.js');
+var getDefinitions = require('./api_helpers/get_definitions.js');
+var getRelatedWords = require('./api_helpers/get_related_words.js');
+
+var readline = require('readline');
+
 /*
   Starting a word game
  */
 
-console.log('Starting a word game');
+var word, answers = [], synonyms = [], definitions = [], antonyms = [];
+
+console.info('Starting a word game');
+async.forever(
+  function(next) {
+    async.waterfall([
+      function(next2) {
+        // Uncomment the below to get RandomWords from WordNick API, currently commented because the majority of words don't have antonym or synonym related with them
+        // getRandomWord(true, null, null, null, null, null, null, null, null, next2);
+        next2(null, 'truth');
+      },
+      function(str, next2) {
+        word = str;
+        async.parallel([
+          function(next3) {
+            getDefinitions(word, 10, 'noun', false, 'wordnet', false, false, next3);
+          },
+          function(next3) {
+            getRelatedWords(str, true, 'synonym', 10, next3);
+          },
+          function(next3) {
+            getRelatedWords(str, true, 'antonym', 10, next3);
+          }
+        ], function(err, results) {
+          synonyms = results[1];
+          answers = synonyms; answers.push(word);
+          definitions = results[0];
+          antonyms = results[2];
+
+          var hasAtleastOneDefSynAnt = !!(results.reduceRight(function(prevValue, currentValue) {
+            return prevValue && currentValue;
+          }));
+
+          if (!hasAtleastOneDefSynAnt) {
+            next(false, null);
+          } else {
+            console.info('Definition:', definitions.shift(), 'Synonym:', synonyms.shift(), 'Antonym:', antonyms.shift());
+            next2(null, true);
+          };
+        });
+      }
+    ], function(err, result) {
+      var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+      var answer, flipPromptNum = 0, pass, response;
+
+      var setPrompt = function setPrompt(choice) {
+        if (!choice)
+          rl.setPrompt('Guess the word =>');
+        else
+          rl.setPrompt('Press 1 to Try Again, 2 for Hint, and 3 to Quit, \nWaiting for your input...\n');
+        rl.prompt();
+      };
+
+      var validateAnswer = function validateAnswer(response, answers) {
+        return answers.some(function(answer) {
+          return (answer == response);
+        });
+      };
+
+      var displayHint = function displayHint() {
+        var hints = {}, noOfBuckets = 3, bucketNames = ['synonyms', 'antonyms', 'definitions'];
+        hints.synonyms = synonyms;
+        hints.antonyms = antonyms;
+        hints.definitions = definitions;
+        switch (Math.floor(Math.random() * noOfBuckets).toString()) {
+          case '0': if (hints[bucketNames[0]].length) {
+                      console.info('Hint from', bucketNames[0],'=> ' + hints[bucketNames[0]][Math.floor(Math.random() * hints[bucketNames[0]].length)]);
+                    } else {
+                      noOfBuckets--;
+                    };
+                    break;
+          case '1': if (hints[bucketNames[1]].length) {
+                      console.info('Hint from', bucketNames[1],'=> ' + hints[bucketNames[1]][Math.floor(Math.random() * hints[bucketNames[1]].length)]);
+                    } else {
+                      noOfBuckets--;
+                    };
+                    break;
+          case '2': if (hints[bucketNames[2]].length) {
+                      console.info('Hint from', bucketNames[2],'=> ' + hints[bucketNames[2]][Math.floor(Math.random() * hints[bucketNames[2]].length)]);
+                    } else {
+                      noOfBuckets--;
+                    };
+                    break;
+          default: console.error('Issue in hint display system.'); break;
+        };
+      };
+
+      setPrompt(false);
+
+      rl.on('line', function(line) {
+        response = line.trim();
+
+        if (flipPromptNum%2 == 0) {
+          pass = validateAnswer(response, answers);
+          if (pass) {
+            console.info('Correct!')
+            rl.close();
+          } else {
+            console.info('Incorrect!')
+            ++flipPromptNum; setPrompt(true);
+          }
+        } else {
+          switch(response) {
+            case '2': displayHint();
+            case '1': ++flipPromptNum; setPrompt(false); break;
+            case '3': next(true, null); rl.close(); break;
+            default: console.info('Try a valid option.');
+          }
+        }
+      }).on('close', function() {
+        console.log('We hope you enjoyed the game!');
+      });
+    });
+  },
+  function(err){
+    console.info('Game Ends!');
+    console.info('The correct guess was', word);
+  }
+);

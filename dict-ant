@@ -5,8 +5,7 @@
 Display antonym(s) of a word
  */
 
-var callback = require('./helpers/callbacks.js').fnDisplayRelatedWords;
-var getRelatedWords = require('./helpers/get_related_words.js');
+var getRelatedWords = require('./api_helpers/get_related_words.js');
 
 var word = process.argv[2];
 
@@ -14,6 +13,5 @@ var word = process.argv[2];
 if (!word) {
   console.error('Required <word> argument missing!');
 } else {
-  console.info('Word:', word);
-  getRelatedWords(word, false, 'antonym', 3, callback);
+  getRelatedWords(word, false, 'antonym', 3, null);
 }

@@ -5,8 +5,7 @@
 Display example(s) of a word
  */
 
-var callback = require('./helpers/callbacks.js').fnDisplayExamples;
-var getExamples = require('./helpers/get_examples.js');
+var getExamples = require('./api_helpers/get_examples.js');
 
 var word = process.argv[2];
 
@@ -14,6 +13,5 @@ var word = process.argv[2];
 if (!word) {
   console.error('Required <word> argument missing!');
 } else {
-  console.info('Word:', word);
-  getExamples(word, false, false, 0, 2, callback);
+  getExamples(word, false, false, 0, 2, null);
 }

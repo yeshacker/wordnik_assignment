@@ -3,12 +3,10 @@
 
 var async = require('async');
 
-var callbacks = require('./helpers/callbacks.js');
-
-var getDefinitions = require('./helpers/get_definitions.js');
-var getExamples = require('./helpers/get_examples.js');
-var getRelatedWords = require('./helpers/get_related_words.js');
-var getWordOfTheDay = require('./helpers/get_word_of_the_day.js');
+var getDefinitions = require('./api_helpers/get_definitions.js');
+var getExamples = require('./api_helpers/get_examples.js');
+var getRelatedWords = require('./api_helpers/get_related_words.js');
+var getWordOfTheDay = require('./api_helpers/get_word_of_the_day.js');
 
 var word = process.argv[2];
 
@@ -28,15 +26,43 @@ var formatDate = function formatDate(date) {
 Display all the above details of a word or the word of the day
  */
 
+var displayDictDetails = function displayDictDetails(word) {
+  async.series({
+    definitions: function(next) {
+      getDefinitions(word, 1, 'noun', false, 'wordnet', false, false, next);
+    },
+    synonyms: function(next) {
+      getRelatedWords(word, false, 'synonym', 1, next);
+    },
+    antonyms: function(next) {
+      getRelatedWords(word, false, 'antonym', 1, next);
+    },
+    examples: function(next) {
+      getExamples(word, false, false, 0, 2, next);
+    }
+  },
+  function (err, results) {
+    console.info('Definition:', results.definitions[0]);
+    console.info('Synonym:', results.synonyms[0]);
+    console.info('Antonym:', results.antonyms[0]);
+    console.info('Example:', results.examples);
+  });
+}
+
 if (!word) {
   var date = formatDate(new Date());
   console.info('Displaying all the above details of the Word of the Day.');
-  getWordOfTheDay(date, callbacks.fnDisplayWordOfTheDay);
+
+  async.waterfall([
+    function(next) {
+      getWordOfTheDay(date, next);
+    },
+    function(word, next) {
+      displayDictDetails(word);
+    }
+  ]);
+
 } else {
   console.info('Displaying all the above details of the word:', word);
-
-  getDefinitions(word, 3, 'noun', false, 'wordnet', false, false, callbacks.fnDisplayDefinitions);
-  getRelatedWords(word, false, 'synonym', 3, callbacks.fnDisplayRelatedWords);
-  getRelatedWords(word, false, 'antonym', 3, callbacks.fnDisplayRelatedWords);
-  getExamples(word, false, false, 0, 2, callbacks.fnDisplayExamples);
+  displayDictDetails(word);
 }
